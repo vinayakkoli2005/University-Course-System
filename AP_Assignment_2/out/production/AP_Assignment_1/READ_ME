@@ -1,0 +1,70 @@
+University Course Registration System
+----------------------------------------
+
+
+Introduction
+-------------
+The University Course Registration System is a Java-based application designed to manage and streamline the process of course registration, enrollment, grading, and complaint handling within a university setting. The system supports three primary user roles:
+
+Students->: Can view and register for courses, track their academic progress, and submit complaints.
+Professor->.: Can manage course details, view enrolled students, and assign grades.
+Administrators->: Have full control over course management, student records, and handling complaints.
+                  This system aims to simplify administrative tasks, enhance user experience, and ensure efficient management of academic activities.
+
+
+Features
+-----------
+User Authentication->: Secure login and sign-up functionalities for Students, Professors, and Administrators.
+Course Management->: Add, remove, and update course details, including assigning professors.
+Enrollment Management->: Students can register for courses, view available courses, and drop courses as needed.
+Academic Tracking->: Students can track their SGPA and CGPA based on enrolled courses and grades.
+Grading System->: Professors can assign grades to students, which are then reflected in the students' academic records.
+Complaint Handling->: Students can submit complaints, and Administrators can manage and resolve them.
+Role-Based Access Control->: Different functionalities are accessible based on the user role, ensuring data security and integrity.
+
+
+
+Assumptions
+--------------
+
+
+Assumption 1
+------------
+Student Registration and Course Enrollment:
+Step 1: First, sign up as a student and register for desired courses.
+Step 2: Then, sign up as a professor.
+Step 3: Assign the professor to the courses that students have registered for through the administrator.
+Step 4: Log in as a professor and assign marks to students.
+Step 5: Students can view their marks, which reflect the grades assigned by professors.
+
+
+
+Assumption 2
+-------------
+Course-Professor Association:
+Each course is assigned to a particular professor.
+Any professor can view the list of students enrolled in their assigned courses.
+
+
+
+Assumption 3
+--------------
+Hard-Coded Data:
+The system is initialized with 5 courses, 3 complaints, 3 students, 2 professors, and 1 administrator.
+Additional courses, complaints, students, professors, and administrators can be added as needed through the system's interface.
+
+
+Assumption 4
+--------------
+Semester-Based Course Offering:
+Each student is assigned a semester during sign-up.
+Students can only view and register for courses that are offered in their current semester.
+This ensures that students enroll in courses appropriate to their academic level and progress.
+
+
+
+UML Diagram link
+----------------
+
+https://lucid.app/lucidchart/f25e1504-32eb-4f1e-9c88-66b8781a77b5/edit?invitationId=inv_7074e3b0-5317-4092-be2c-b0c88f5871ee&page=0_0#
+
