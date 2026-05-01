@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus University Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg-color: #0f172a;
+            --surface: rgba(30, 41, 59, 0.7);
+            --surface-border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --danger: #ef4444;
+            --success: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .glass {
+            background: var(--surface);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--surface-border);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        nav {
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--surface-border);
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: none;
+            gap: 1rem;
+        }
+
+        .nav-links.active {
+            display: flex;
+        }
+
+        .nav-btn {
+            background: transparent;
+            color: var(--text-muted);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.3);
+        }
+
+        .container {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Views */
+        .view {
+            display: none;
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Auth Screen */
+        .auth-container {
+            max-width: 400px;
+            margin: 4rem auto;
+            padding: 2.5rem;
+            text-align: center;
+        }
+
+        .auth-title {
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .form-control {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--surface-border);
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+        }
+
+        .auth-switch {
+            margin-top: 1.5rem;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .auth-switch span {
+            color: var(--primary);
+        }
+
+        /* Dashboard specific */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: rgba(99, 102, 241, 0.2);
+            color: #818cf8;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin-top: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--surface-border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--surface-border);
+        }
+
+        th {
+            background: rgba(15, 23, 42, 0.5);
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            background: var(--surface);
+            border: 1px solid var(--surface-border);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">Nexus UMS</div>
+        <div class="nav-links" id="nav-student">
+            <button class="nav-btn active" onclick="switchView('student-courses')">Courses</button>
+            <button class="nav-btn" onclick="switchView('student-enrollments')">My Enrollments</button>
+            <button class="nav-btn" onclick="switchView('student-complaints')">Complaints</button>
+            <button class="btn btn-danger" onclick="logout()">Logout</button>
+        </div>
+        <div class="nav-links" id="nav-admin">
+            <button class="nav-btn active" onclick="switchView('admin-courses')">Manage Courses</button>
+            <button class="nav-btn" onclick="switchView('admin-complaints')">View Complaints</button>
+            <button class="btn btn-danger" onclick="logout()">Logout</button>
+        </div>
+        <div class="nav-links" id="nav-prof">
+            <button class="nav-btn active" onclick="switchView('prof-courses')">My Courses</button>
+            <button class="btn btn-danger" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Auth View -->
+        <div id="view-auth" class="view active">
+            <div class="glass auth-container">
+                <h2 class="auth-title" id="auth-title">Welcome Back</h2>
+                <form id="auth-form" onsubmit="handleAuth(event)">
+                    <div class="form-group" id="name-group" style="display: none;">
+                        <label>Full Name</label>
+                        <input type="text" id="auth-name" class="form-control">
+                    </div>
+                    <div class="form-group" id="role-group" style="display: none;">
+                        <label>Account Type</label>
+                        <select id="auth-role" class="form-control">
+                            <option value="student">Student</option>
+                            <option value="professor">Professor</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="auth-email" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="auth-password" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn" style="width: 100%;" id="auth-submit-btn">Login</button>
+                </form>
+                <div class="auth-switch" onclick="toggleAuthMode()">
+                    <span id="auth-switch-text">Don't have an account? Sign up</span>
+                </div>
+                <div style="margin-top: 1rem; font-size: 0.8rem; color: var(--text-muted);">
+                    Demo Admin: admin@uni.edu / admin123
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Views -->
+        <div id="view-student-courses" class="view">
+            <div class="dashboard-header">
+                <h2>Available Courses</h2>
+                <span class="badge" id="student-semester-badge">Semester 1</span>
+            </div>
+            <div class="grid" id="student-courses-grid">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <div id="view-student-enrollments" class="view">
+            <div class="dashboard-header">
+                <h2>My Enrollments</h2>
+            </div>
+            <div class="glass table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Course Name</th>
+                            <th>Professor</th>
+                            <th>Status</th>
+                            <th>Grade</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="student-enrollments-tbody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="view-student-complaints" class="view">
+            <div class="dashboard-header">
+                <h2>My Complaints</h2>
+                <button class="btn" onclick="document.getElementById('complaint-form-glass').style.display='block'">+ New Complaint</button>
+            </div>
+            
+            <div class="glass" id="complaint-form-glass" style="display: none; margin-bottom: 2rem; padding: 1.5rem;">
+                <h3>Submit Complaint</h3>
+                <div class="form-group" style="margin-top: 1rem;">
+                    <textarea id="complaint-desc" class="form-control" rows="3" placeholder="Describe your issue..."></textarea>
+                </div>
+                <button class="btn" onclick="submitComplaint()">Submit</button>
+                <button class="btn btn-danger" onclick="document.getElementById('complaint-form-glass').style.display='none'">Cancel</button>
+            </div>
+
+            <div class="grid" id="student-complaints-grid">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <!-- Admin Views -->
+        <div id="view-admin-courses" class="view">
+            <div class="dashboard-header">
+                <h2>Manage Courses</h2>
+                <button class="btn" onclick="document.getElementById('course-form-glass').style.display='block'">+ Add Course</button>
+            </div>
+
+            <div class="glass" id="course-form-glass" style="display: none; margin-bottom: 2rem; padding: 1.5rem;">
+                <h3>Add New Course</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+                    <div class="form-group">
+                        <label>Course Code</label>
+                        <input type="text" id="new-course-code" class="form-control" placeholder="e.g. CS101">
+                    </div>
+                    <div class="form-group">
+                        <label>Course Name</label>
+                        <input type="text" id="new-course-name" class="form-control" placeholder="e.g. Intro to CS">
+                    </div>
+                    <div class="form-group">
+                        <label>Credits</label>
+                        <input type="number" id="new-course-credits" class="form-control" value="4">
+                    </div>
+                    <div class="form-group">
+                        <label>Professor Name</label>
+                        <input type="text" id="new-course-prof" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Semester</label>
+                        <input type="number" id="new-course-sem" class="form-control" value="1">
+                    </div>
+                </div>
+                <button class="btn" onclick="addCourse()" style="margin-top: 1rem;">Save Course</button>
+                <button class="btn btn-danger" onclick="document.getElementById('course-form-glass').style.display='none'" style="margin-top: 1rem;">Cancel</button>
+            </div>
+
+            <div class="glass table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Course Name</th>
+                            <th>Professor</th>
+                            <th>Credits</th>
+                            <th>Sem</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-courses-tbody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="view-admin-complaints" class="view">
+            <div class="dashboard-header">
+                <h2>All Complaints</h2>
+            </div>
+            <div class="grid" id="admin-complaints-grid">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <!-- Professor Views -->
+        <div id="view-prof-courses" class="view">
+            <div class="dashboard-header">
+                <h2>My Courses</h2>
+            </div>
+            <div class="grid" id="prof-courses-grid">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <div id="view-prof-students" class="view">
+            <div class="dashboard-header">
+                <h2 id="prof-course-title">Enrolled Students</h2>
+                <button class="btn btn-danger" onclick="switchView('prof-courses')">Back</button>
+            </div>
+            <div class="glass table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Email</th>
+                            <th>Status</th>
+                            <th>Grade</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="prof-students-tbody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast">Message here</div>
+
+    <script>
+        // Supabase Configuration
+        const SUPA_URL = 'https://molakadfkxcmzxjtndze.supabase.co';
+        const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1vbGFrYWRma3hjbXp4anRuZHplIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2Mzg4OTAsImV4cCI6MjA5MzIxNDg5MH0.DowGbDPodpNpktbqgaOK7CqCvQxWtczSMyyVsxvdZrc';
+
+        // State
+        let currentUser = null;
+        let isLoginMode = true;
+
+        // Utilities
+        async function supaFetch(path, options = {}) {
+            const url = `${SUPA_URL}/rest/v1/${path}`;
+            const headers = {
+                'apikey': SUPA_KEY,
+                'Authorization': `Bearer ${SUPA_KEY}`,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=representation'
+            };
+            
+            try {
+                const res = await fetch(url, { ...options, headers: { ...headers, ...options.headers } });
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.message || 'API Error');
+                }
+                return res.status === 204 ? null : await res.json();
+            } catch (err) {
+                showToast(err.message, true);
+                throw err;
+            }
+        }
+
+        function showToast(msg, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.style.borderLeft = `4px solid ${isError ? 'var(--danger)' : 'var(--success)'}`;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function switchView(viewId) {
+            document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+            document.getElementById(`view-${viewId}`).classList.add('active');
+            
+            // Update active nav button
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = Array.from(document.querySelectorAll('.nav-btn')).find(b => b.getAttribute('onclick') === `switchView('${viewId}')`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            // Load data based on view
+            if (viewId === 'student-courses') loadStudentCourses();
+            if (viewId === 'student-enrollments') loadStudentEnrollments();
+            if (viewId === 'student-complaints') loadStudentComplaints();
+            if (viewId === 'admin-courses') loadAdminCourses();
+            if (viewId === 'admin-complaints') loadAdminComplaints();
+            if (viewId === 'prof-courses') loadProfCourses();
+        }
+
+        // Authentication
+        function toggleAuthMode() {
+            isLoginMode = !isLoginMode;
+            document.getElementById('auth-title').textContent = isLoginMode ? 'Welcome Back' : 'Create Account';
+            document.getElementById('auth-submit-btn').textContent = isLoginMode ? 'Login' : 'Sign Up';
+            document.getElementById('name-group').style.display = isLoginMode ? 'none' : 'block';
+            document.getElementById('role-group').style.display = isLoginMode ? 'none' : 'block';
+            document.getElementById('auth-switch-text').textContent = isLoginMode ? "Don't have an account? Sign up" : "Already have an account? Login";
+        }
+
+        async function handleAuth(e) {
+            e.preventDefault();
+            const email = document.getElementById('auth-email').value;
+            const pass = document.getElementById('auth-password').value;
+            const name = document.getElementById('auth-name').value;
+
+            try {
+                if (isLoginMode) {
+                    // Login: check users table directly (No actual auth implemented, just matching table for demo)
+                    const data = await supaFetch(`users?email=eq.${encodeURIComponent(email)}&password=eq.${encodeURIComponent(pass)}&select=*`);
+                    if (data && data.length > 0) {
+                        loginSuccess(data[0]);
+                    } else {
+                        showToast('Invalid credentials', true);
+                    }
+                } else {
+                    // Signup (student or prof)
+                    const role = document.getElementById('auth-role') ? document.getElementById('auth-role').value : 'student';
+                    const data = await supaFetch('users', {
+                        method: 'POST',
+                        body: JSON.stringify({ email, password: pass, name, role: role, semester: 1 })
+                    });
+                    if (data && data.length > 0) {
+                        showToast('Account created!');
+                        loginSuccess(data[0]);
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function loginSuccess(user) {
+            currentUser = user;
+            sessionStorage.setItem('ums_user', JSON.stringify(user));
+            setupDashboard();
+            showToast(`Welcome, ${user.name}`);
+        }
+
+        function logout() {
+            currentUser = null;
+            sessionStorage.removeItem('ums_user');
+            document.getElementById('nav-student').classList.remove('active');
+            document.getElementById('nav-admin').classList.remove('active');
+            document.getElementById('nav-prof').classList.remove('active');
+            switchView('auth');
+            document.getElementById('auth-form').reset();
+        }
+
+        function setupDashboard() {
+            if (!currentUser) return;
+            
+            document.getElementById('nav-student').classList.remove('active');
+            document.getElementById('nav-admin').classList.remove('active');
+            document.getElementById('nav-prof').classList.remove('active');
+
+            if (currentUser.role === 'admin') {
+                document.getElementById('nav-admin').classList.add('active');
+                switchView('admin-courses');
+            } else if (currentUser.role === 'professor') {
+                document.getElementById('nav-prof').classList.add('active');
+                switchView('prof-courses');
+            } else {
+                document.getElementById('nav-student').classList.add('active');
+                document.getElementById('student-semester-badge').textContent = `Semester ${currentUser.semester || 1}`;
+                switchView('student-courses');
+            }
+        }
+
+        // Student Functions
+        async function loadStudentCourses() {
+            try {
+                // Fetch all courses for student's semester
+                const sem = currentUser.semester || 1;
+                const courses = await supaFetch(`courses?semester=eq.${sem}&select=*`);
+                
+                // Fetch student's enrollments to disable "Enroll" buttons
+                const enrollments = await supaFetch(`enrollments?student_id=eq.${currentUser.id}&select=course_id`);
+                const enrolledIds = enrollments.map(e => e.course_id);
+
+                const grid = document.getElementById('student-courses-grid');
+                grid.innerHTML = '';
+
+                if (courses.length === 0) {
+                    grid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1">No courses available for your semester.</div>`;
+                    return;
+                }
+
+                courses.forEach(c => {
+                    const isEnrolled = enrolledIds.includes(c.id);
+                    grid.innerHTML += `
+                        <div class="glass card">
+                            <div class="card-header">
+                                <span class="badge">${c.code}</span>
+                                <span style="font-size: 0.875rem; color: var(--text-muted);">${c.credits} Credits</span>
+                            </div>
+                            <h3 class="card-title">${c.name}</h3>
+                            <div style="color: var(--text-muted); font-size: 0.875rem;">
+                                Prof: ${c.professor_name || 'TBA'}
+                            </div>
+                            <button class="btn" style="margin-top: auto; ${isEnrolled ? 'opacity: 0.5; cursor: not-allowed;' : ''}" 
+                                onclick="${isEnrolled ? '' : `enrollCourse('${c.id}')`}">
+                                ${isEnrolled ? 'Enrolled' : 'Register'}
+                            </button>
+                        </div>
+                    `;
+                });
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function enrollCourse(courseId) {
+            try {
+                await supaFetch('enrollments', {
+                    method: 'POST',
+                    body: JSON.stringify({ student_id: currentUser.id, course_id: courseId, status: 'enrolled' })
+                });
+                showToast('Successfully enrolled in course');
+                loadStudentCourses(); // Refresh
+            } catch (err) {
+                if(err.message.includes('unique_violation')) {
+                    showToast('Already enrolled!', true);
+                }
+            }
+        }
+
+        async function loadStudentEnrollments() {
+            try {
+                const enrollments = await supaFetch(`enrollments?student_id=eq.${currentUser.id}&select=id,status,grade,courses(code,name,professor_name)`);
+                const tbody = document.getElementById('student-enrollments-tbody');
+                tbody.innerHTML = '';
+
+                if (enrollments.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" class="empty-state">No enrollments found.</td></tr>`;
+                    return;
+                }
+
+                enrollments.forEach(e => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><strong>${e.courses.code}</strong></td>
+                            <td>${e.courses.name}</td>
+                            <td>${e.courses.professor_name || 'TBA'}</td>
+                            <td><span class="badge" style="background: ${e.status==='enrolled'?'rgba(99,102,241,0.2)':'rgba(16,185,129,0.2)'}">${e.status}</span></td>
+                            <td>${e.grade || '-'}</td>
+                            <td>
+                                ${e.status === 'enrolled' ? 
+                                    `<button class="btn btn-danger" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="dropCourse('${e.id}')">Drop</button>` : 
+                                    '-'}
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function dropCourse(enrollmentId) {
+            if(!confirm("Are you sure you want to drop this course?")) return;
+            try {
+                await supaFetch(`enrollments?id=eq.${enrollmentId}`, { method: 'DELETE' });
+                showToast('Course dropped successfully');
+                loadStudentEnrollments();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function loadStudentComplaints() {
+            try {
+                const complaints = await supaFetch(`complaints?student_id=eq.${currentUser.id}&select=*&order=created_at.desc`);
+                const grid = document.getElementById('student-complaints-grid');
+                grid.innerHTML = '';
+
+                if (complaints.length === 0) {
+                    grid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1">No complaints submitted yet.</div>`;
+                    return;
+                }
+
+                complaints.forEach(c => {
+                    grid.innerHTML += `
+                        <div class="glass card">
+                            <div class="card-header">
+                                <span style="font-size: 0.8rem; color: var(--text-muted);">${new Date(c.created_at).toLocaleDateString()}</span>
+                                <span class="badge" style="background: ${c.status==='Resolved'?'rgba(16,185,129,0.2)':'rgba(239,68,68,0.2)'}; color: ${c.status==='Resolved'?'var(--success)':'var(--danger)'}">${c.status}</span>
+                            </div>
+                            <p style="margin-top: 0.5rem; line-height: 1.5;">${c.description}</p>
+                            ${c.resolution ? `<div style="margin-top: 1rem; padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 8px; font-size: 0.875rem;"><strong style="color:var(--success)">Resolution:</strong><br>${c.resolution}</div>` : ''}
+                        </div>
+                    `;
+                });
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function submitComplaint() {
+            const desc = document.getElementById('complaint-desc').value;
+            if(!desc) return;
+            
+            try {
+                await supaFetch('complaints', {
+                    method: 'POST',
+                    body: JSON.stringify({ student_id: currentUser.id, description: desc })
+                });
+                showToast('Complaint submitted');
+                document.getElementById('complaint-desc').value = '';
+                document.getElementById('complaint-form-glass').style.display = 'none';
+                loadStudentComplaints();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // Admin Functions
+        async function loadAdminCourses() {
+            try {
+                const courses = await supaFetch('courses?select=*&order=semester.asc,code.asc');
+                const tbody = document.getElementById('admin-courses-tbody');
+                tbody.innerHTML = '';
+
+                if (courses.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" class="empty-state">No courses found.</td></tr>`;
+                    return;
+                }
+
+                courses.forEach(c => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><strong>${c.code}</strong></td>
+                            <td>${c.name}</td>
+                            <td>${c.professor_name || 'TBA'}</td>
+                            <td>${c.credits}</td>
+                            <td>Sem ${c.semester}</td>
+                            <td>
+                                <button class="btn btn-danger" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="deleteCourse('${c.id}')">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function addCourse() {
+            const code = document.getElementById('new-course-code').value;
+            const name = document.getElementById('new-course-name').value;
+            const credits = document.getElementById('new-course-credits').value;
+            const prof = document.getElementById('new-course-prof').value;
+            const sem = document.getElementById('new-course-sem').value;
+
+            if(!code || !name) {
+                showToast('Code and Name are required', true);
+                return;
+            }
+
+            try {
+                await supaFetch('courses', {
+                    method: 'POST',
+                    body: JSON.stringify({ code, name, credits: parseInt(credits), professor_name: prof, semester: parseInt(sem) })
+                });
+                showToast('Course added successfully');
+                document.getElementById('course-form-glass').style.display = 'none';
+                loadAdminCourses();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function deleteCourse(courseId) {
+            if(!confirm("Are you sure? This will delete all enrollments for this course as well.")) return;
+            try {
+                await supaFetch(`courses?id=eq.${courseId}`, { method: 'DELETE' });
+                showToast('Course deleted');
+                loadAdminCourses();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function loadAdminComplaints() {
+            try {
+                const complaints = await supaFetch('complaints?select=*,users(name,email)&order=created_at.desc');
+                const grid = document.getElementById('admin-complaints-grid');
+                grid.innerHTML = '';
+
+                if (complaints.length === 0) {
+                    grid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1">No complaints found.</div>`;
+                    return;
+                }
+
+                complaints.forEach(c => {
+                    grid.innerHTML += `
+                        <div class="glass card">
+                            <div class="card-header">
+                                <div>
+                                    <strong style="color: var(--primary)">${c.users?.name || 'Unknown Student'}</strong><br>
+                                    <span style="font-size: 0.75rem; color: var(--text-muted);">${c.users?.email}</span>
+                                </div>
+                                <span class="badge" style="background: ${c.status==='Resolved'?'rgba(16,185,129,0.2)':'rgba(239,68,68,0.2)'}; color: ${c.status==='Resolved'?'var(--success)':'var(--danger)'}">${c.status}</span>
+                            </div>
+                            <p style="margin-top: 1rem; line-height: 1.5; font-size: 0.9rem;">${c.description}</p>
+                            
+                            ${c.status === 'Pending' ? `
+                                <div style="margin-top: 1rem;">
+                                    <textarea id="resolve-desc-${c.id}" class="form-control" rows="2" placeholder="Resolution details..." style="font-size: 0.8rem; margin-bottom: 0.5rem;"></textarea>
+                                    <button class="btn" style="width: 100%; font-size: 0.8rem; padding: 0.5rem;" onclick="resolveComplaint('${c.id}')">Mark Resolved</button>
+                                </div>
+                            ` : `
+                                <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 8px; font-size: 0.8rem;">
+                                    <strong style="color:var(--success)">Resolution:</strong><br>${c.resolution}
+                                </div>
+                            `}
+                        </div>
+                    `;
+                });
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function resolveComplaint(complaintId) {
+            const res = document.getElementById(`resolve-desc-${complaintId}`).value;
+            if(!res) {
+                showToast('Please provide resolution details', true);
+                return;
+            }
+
+            try {
+                await supaFetch(`complaints?id=eq.${complaintId}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ status: 'Resolved', resolution: res })
+                });
+                showToast('Complaint resolved');
+                loadAdminComplaints();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // Professor Functions
+        async function loadProfCourses() {
+            try {
+                // Find courses by prof name (naive match)
+                const courses = await supaFetch(`courses?professor_name=ilike.%25${encodeURIComponent(currentUser.name)}%25&select=*`);
+                const grid = document.getElementById('prof-courses-grid');
+                grid.innerHTML = '';
+
+                if (courses.length === 0) {
+                    grid.innerHTML = `<div class="empty-state" style="grid-column: 1/-1">No courses assigned to you yet.</div>`;
+                    return;
+                }
+
+                courses.forEach(c => {
+                    grid.innerHTML += `
+                        <div class="glass card">
+                            <div class="card-header">
+                                <span class="badge">${c.code}</span>
+                                <span style="font-size: 0.875rem; color: var(--text-muted);">${c.credits} Credits</span>
+                            </div>
+                            <h3 class="card-title">${c.name}</h3>
+                            <button class="btn" style="margin-top: auto;" onclick="loadProfStudents('${c.id}', '${c.name.replace(/'/g, "\\'")}')">View Students & Grade</button>
+                        </div>
+                    `;
+                });
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function loadProfStudents(courseId, courseName) {
+            document.getElementById('prof-course-title').textContent = `Students: ${courseName}`;
+            switchView('prof-students');
+            
+            try {
+                const enrollments = await supaFetch(`enrollments?course_id=eq.${courseId}&select=*,users(name,email)&order=created_at.desc`);
+                const tbody = document.getElementById('prof-students-tbody');
+                tbody.innerHTML = '';
+
+                if (enrollments.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="empty-state">No students enrolled yet.</td></tr>`;
+                    return;
+                }
+
+                enrollments.forEach(e => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><strong>${e.users?.name || 'Unknown'}</strong></td>
+                            <td>${e.users?.email || 'N/A'}</td>
+                            <td><span class="badge" style="background: ${e.status==='completed'?'rgba(16,185,129,0.2)':'rgba(99,102,241,0.2)'}">${e.status}</span></td>
+                            <td>${e.grade || '-'}</td>
+                            <td>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <input type="text" id="grade-input-${e.id}" class="form-control" style="width: 60px; padding: 0.4rem;" placeholder="A" value="${e.grade || ''}">
+                                    <button class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="assignGrade('${e.id}', '${courseId}', '${courseName.replace(/'/g, "\\'")}')">Save</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function assignGrade(enrollmentId, courseId, courseName) {
+            const grade = document.getElementById(`grade-input-${enrollmentId}`).value;
+            if(!grade) {
+                showToast('Please enter a grade first', true);
+                return;
+            }
+            try {
+                await supaFetch(`enrollments?id=eq.${enrollmentId}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ grade: grade, status: 'completed' })
+                });
+                showToast('Grade assigned successfully');
+                loadProfStudents(courseId, courseName);
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // Init
+        window.onload = () => {
+            const savedUser = sessionStorage.getItem('ums_user');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                setupDashboard();
+            }
+        };
+    </script>
+</body>
+</html>
